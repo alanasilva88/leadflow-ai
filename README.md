@@ -1,36 +1,84 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# LeadFlow AI
 
-## Getting Started
+Sistema pessoal para organizar a prospecção de clientes de serviços digitais. A Sprint 1 entrega uma base funcional e local para cadastrar, consultar, atualizar, filtrar e excluir leads.
 
-First, run the development server:
+## Tecnologias
+
+- Next.js 16 com App Router, React 19 e TypeScript
+- Tailwind CSS 4
+- Prisma 7 com SQLite
+- Zod e React Hook Form
+- Lucide React
+
+## Funcionalidades da Sprint 1
+
+- Dashboard com nove métricas calculadas do banco
+- Cinco leads mais recentes e cinco próximos follow-ups
+- Listagem responsiva (tabela no desktop e cards no celular)
+- Busca por nome e filtros server-side por status e potencial
+- Cadastro, detalhes, edição e exclusão com confirmação acessível
+- Validação Zod no navegador e no servidor
+- Feedback de sucesso/erro, loading, lista vazia e página 404
+- Sidebar responsiva com indicação da rota atual
+- Seed com 12 clínicas veterinárias claramente fictícias
+
+## Estrutura principal
+
+```text
+app/                 rotas, layouts, loading e páginas de erro
+components/          layout, dashboard, leads e componentes de UI
+lib/actions/         Server Actions do CRUD
+lib/validations/     schema Zod reutilizável
+lib/utils/           labels e formatadores
+prisma/              schema, migrations e seed
+types/               tipos compartilhados
+```
+
+## Instalação e execução
+
+Requer Node.js 20.19 ou superior e npm.
+
+```bash
+npm install
+```
+
+Copie `.env.example` para `.env` e mantenha:
+
+```env
+DATABASE_URL="file:./dev.db"
+```
+
+Prepare e popule o banco:
+
+```bash
+npx prisma migrate dev
+npx prisma db seed
+```
+
+Inicie o ambiente de desenvolvimento:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Acesse `http://localhost:3000`. A rota inicial redireciona para o dashboard.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Rotas
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- `/dashboard` — métricas, leads recentes e follow-ups
+- `/leads` — busca, filtros e listagem
+- `/leads/new` — cadastro
+- `/leads/[id]` — detalhes
+- `/leads/[id]/edit` — edição
 
-## Learn More
+## Qualidade
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+npm run lint
+npm run typecheck
+npm run build
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Próximas sprints
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Ficaram intencionalmente fora desta sprint: importação CSV, análise automática de sites, OpenAI, integrações com WhatsApp e Instagram, autenticação, multiusuário, gráficos avançados, Docker e banco externo.

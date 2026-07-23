@@ -1,0 +1,66 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+enum SalesPotential {
+  HIGH
+  MEDIUM
+  LOW
+}
+
+enum LeadStatus {
+  NEW
+  ANALYZED
+  CONTACTED
+  RESPONDED
+  FOLLOW_UP
+  MEETING
+  PROPOSAL
+  CLOSED
+  LOST
+}
+
+enum LeadResponse {
+  NO_RESPONSE
+  POSITIVE
+  NEGATIVE
+  MORE_INFORMATION
+  CONTACT_LATER
+  MEETING_SCHEDULED
+  PROPOSAL_SENT
+  DEAL_CLOSED
+}
+
+model Lead {
+  id                    String          @id @default(cuid())
+  businessName          String
+  phone                 String?
+  instagram             String?
+  website               String?
+  rating                Float?
+  reviewCount           Int?
+  segment               String?
+  city                  String?
+  salesPotential        SalesPotential  @default(MEDIUM)
+  websiteStatus         String?
+  websiteScore          Int?
+  mainProblem           String?
+  suggestedSolution     String?
+  personalizedMessage   String?
+  status                LeadStatus      @default(NEW)
+  contactedAt           DateTime?
+  followUpDate          DateTime?
+  response              LeadResponse?
+  notes                 String?
+  createdAt             DateTime        @default(now())
+  updatedAt             DateTime        @updatedAt
+
+  @@index([businessName])
+  @@index([status])
+  @@index([salesPotential])
+  @@index([followUpDate])
+}
