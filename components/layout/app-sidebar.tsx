@@ -1,6 +1,6 @@
 "use client";
 
-import { BarChart3, Plus, Users } from "lucide-react";
+import { BarChart3, FileUp, Plus, Users } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -8,6 +8,7 @@ export const navigation = [
   { href: "/dashboard", label: "Visão geral", icon: BarChart3 },
   { href: "/leads", label: "Leads", icon: Users },
   { href: "/leads/new", label: "Adicionar lead", icon: Plus },
+  { href: "/leads/import", label: "Importar leads", icon: FileUp },
 ];
 
 export function NavigationLinks({ onNavigate }: { onNavigate?: () => void }) {

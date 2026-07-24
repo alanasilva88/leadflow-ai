@@ -9,7 +9,9 @@
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
     "db:migrate": "prisma migrate dev",
-    "db:seed": "prisma db seed"
+    "db:seed": "prisma db seed",
+    "examples:generate": "node scripts/generate-example-xlsx.mjs",
+    "test": "tsx --test lib/import/import.test.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.4.0",
@@ -20,6 +22,7 @@
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "react-hook-form": "^7.82.0",
+    "xlsx": "^0.18.5",
     "zod": "^4.4.3"
   },
   "devDependencies": {

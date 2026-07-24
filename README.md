@@ -82,3 +82,28 @@ npm run build
 ## Próximas sprints
 
 Ficaram intencionalmente fora desta sprint: importação CSV, análise automática de sites, OpenAI, integrações com WhatsApp e Instagram, autenticação, multiusuário, gráficos avançados, Docker e banco externo.
+
+## Sprint 2 — Importação inteligente
+
+O LeadFlow AI importa planilhas `.xlsx` e `.csv` pela rota `/leads/import`. O arquivo é lido localmente no navegador, não fica armazenado e somente os registros normalizados são enviados ao servidor após a confirmação.
+
+### Como importar
+
+1. No Google Planilhas, use **Arquivo → Fazer download → Microsoft Excel (.xlsx)**. No Instant Data Scraper, use a opção de exportar **CSV**.
+2. Abra **Importar leads** na navegação ou **Importar planilha** em `/leads`.
+3. Escolha o arquivo, a aba (quando houver várias), confira a prévia e revise o mapeamento sugerido.
+4. Mapeie obrigatoriamente **Nome do negócio**, valide o resumo e confirme.
+
+São aceitos arquivos de até **5 MB**, com no máximo **500 registros**, **50 colunas** e células de até **1.000 caracteres**. Cabeçalhos comuns em português e inglês são reconhecidos para nome, telefone, Instagram, site, nota, avaliações, segmento, cidade, potencial e status. O mapeamento é apenas uma sugestão e pode ser alterado.
+
+Dados opcionais inválidos são convertidos em nulo com aviso. Linhas sem nome válido são ignoradas. Duplicados são detectados por telefone normalizado, site, Instagram ou nome exato normalizado combinado com cidade; duplicados no arquivo ou no banco são ignorados, nunca atualizados.
+
+Arquivos fictícios estão em `examples/leads-example.csv` e `examples/leads-example.xlsx`. Para regenerar o XLSX com duas abas:
+
+```bash
+npm run examples:generate
+```
+
+### Limitações atuais
+
+Esta versão não integra diretamente com Google Sheets, não usa IA, não analisa sites, não atualiza/mescla leads existentes e não mantém os arquivos ou mapeamentos. Autenticação, filas, importações massivas, WhatsApp, Instagram e análise automática ficam para outras sprints.

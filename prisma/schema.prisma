@@ -36,28 +36,28 @@ enum LeadResponse {
 }
 
 model Lead {
-  id                    String          @id @default(cuid())
-  businessName          String
-  phone                 String?
-  instagram             String?
-  website               String?
-  rating                Float?
-  reviewCount           Int?
-  segment               String?
-  city                  String?
-  salesPotential        SalesPotential  @default(MEDIUM)
-  websiteStatus         String?
-  websiteScore          Int?
-  mainProblem           String?
-  suggestedSolution     String?
-  personalizedMessage   String?
-  status                LeadStatus      @default(NEW)
-  contactedAt           DateTime?
-  followUpDate          DateTime?
-  response              LeadResponse?
-  notes                 String?
-  createdAt             DateTime        @default(now())
-  updatedAt             DateTime        @updatedAt
+  id                  String         @id @default(cuid())
+  businessName        String
+  phone               String?
+  instagram           String?
+  website             String?
+  rating              Float?
+  reviewCount         Int?
+  segment             String?
+  city                String?
+  salesPotential      SalesPotential @default(MEDIUM)
+  websiteStatus       String?
+  websiteScore        Int?
+  mainProblem         String?
+  suggestedSolution   String?
+  personalizedMessage String?
+  status              LeadStatus     @default(NEW)
+  contactedAt         DateTime?
+  followUpDate        DateTime?
+  response            LeadResponse?
+  notes               String?
+  createdAt           DateTime       @default(now())
+  updatedAt           DateTime       @updatedAt
 
   @@index([businessName])
   @@index([status])

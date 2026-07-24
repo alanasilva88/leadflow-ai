@@ -1,5 +1,5 @@
 import { LeadStatus, Prisma, SalesPotential } from "@prisma/client";
-import { Plus, Search } from "lucide-react";
+import { FileUp, Plus } from "lucide-react";
 import Link from "next/link";
 import { LeadsTable } from "@/components/leads/leads-table";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -50,10 +50,16 @@ export default async function LeadsPage({
         <p className="text-sm text-slate-500">
           {leads.length} resultado(s), limitado a 100 registros.
         </p>
-        <Link href="/leads/new" className="btn-primary">
-          <Plus size={17} />
-          Adicionar lead
-        </Link>
+        <div className="flex flex-wrap gap-2">
+          <Link href="/leads/import" className="btn-secondary">
+            <FileUp size={17} />
+            Importar planilha
+          </Link>
+          <Link href="/leads/new" className="btn-primary">
+            <Plus size={17} />
+            Adicionar lead
+          </Link>
+        </div>
       </div>
       <form
         className="card grid gap-3 p-4 sm:grid-cols-[1fr_180px_180px_auto]"

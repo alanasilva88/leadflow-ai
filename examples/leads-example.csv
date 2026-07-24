@@ -1,0 +1,13 @@
+Business Name,Telefone,Instagram,Website,Rating,Reviews,Segmento,Cidade,Potencial,Status,Observação irrelevante
+Clínica Vet Aurora,(11) 98888-1001,@vetaurora,vetaurora.example,"4,8",123 avaliações,Veterinária,São Paulo,alta,novo,exemplo
+Pet Vida Centro,(11) 98888-1002,petvidacentro,https://petvida.example,4.6,(89),Veterinária,São Paulo,média,analisado,exemplo
+Hospital Patas Sul,(51) 98888-1003,https://instagram.com/patassul/,patassul.example,4.9,1.234,Veterinária,Porto Alegre,high,contatado,exemplo
+Clínica Bicho Feliz,(21) 98888-1004,@bichofeliz,bichofeliz.example,"4,7",210 avaliações,Veterinária,Rio de Janeiro,baixa,respondeu,exemplo
+Vet Jardim Azul,(31) 98888-1005,@vetjardimazul,vetjardim.example,4.5,76,Veterinária,Belo Horizonte,medium,reunião,exemplo
+Amigos de Quatro Patas,(41) 98888-1006,@quatroamigos,quatroamigos.example,4.8,340,Veterinária,Curitiba,alta,proposta,exemplo
+Mundo Animal Norte,(61) 98888-1007,@mundoanimalnorte,mundoanimal.example,4.4,55,Veterinária,Brasília,média,follow up,exemplo
+Clínica Coração Pet,(71) 98888-1008,@coracaopet,coracaopet.example,5,28,Veterinária,Salvador,alta,fechado,exemplo
+Vet Maré Serena,(81) 98888-1009,@vetmareserena,mareserena.example,4.2,"1,234 reviews",Veterinária,Recife,low,perdido,exemplo
+,(85) 98888-1010,@semnome,semnome.example,4.1,12,Veterinária,Fortaleza,média,novo,linha sem nome
+Clínica Aurora Duplicada,(11) 98888-1001,@outraaurora,outra.example,4.3,18,Veterinária,São Paulo,alta,novo,duplicado telefone
+Pet Vida Filial,(19) 98888-1012,@petvidafilial,https://petvida.example,4.0,9,Veterinária,Campinas,baixa,novo,duplicado site
