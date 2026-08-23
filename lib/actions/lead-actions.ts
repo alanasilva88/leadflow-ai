@@ -6,6 +6,7 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { leadSchema, type LeadFormInput } from "@/lib/validations/lead-schema";
 import type { ActionState } from "@/types/lead";
+import { requireSession } from "@/lib/auth/session";
 
 function prismaMessage(error: unknown) {
   if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2025") {
@@ -31,6 +32,7 @@ function parseData(input: LeadFormInput) {
 }
 
 export async function createLead(input: LeadFormInput): Promise<ActionState> {
+  await requireSession();
   const result = parseData(input);
   if (!result.ok) return result.error;
   let id: string;
@@ -46,6 +48,7 @@ export async function createLead(input: LeadFormInput): Promise<ActionState> {
 }
 
 export async function updateLead(id: string, input: LeadFormInput): Promise<ActionState> {
+  await requireSession();
   const result = parseData(input);
   if (!result.ok) return result.error;
   try {
@@ -60,6 +63,7 @@ export async function updateLead(id: string, input: LeadFormInput): Promise<Acti
 }
 
 export async function deleteLead(id: string): Promise<ActionState> {
+  await requireSession();
   try {
     await prisma.lead.delete({ where: { id } });
     revalidatePath("/dashboard");

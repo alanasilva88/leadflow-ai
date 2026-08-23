@@ -1,137 +1,20 @@
-import type { Lead } from "@prisma/client";
-import { ExternalLink, Eye, Pencil } from "lucide-react";
+import type { AIAnalysisStatus, Lead } from "@prisma/client";
+import { Building2, ChevronRight, Eye, MapPin, Pencil } from "lucide-react";
 import Link from "next/link";
-import { formatDate, formatRating, emptyValue } from "@/lib/utils/formatters";
+import { emptyValue, formatDate, formatRating } from "@/lib/utils/formatters";
+import { statusLabels } from "@/lib/utils/lead-labels";
+import { followUpState } from "@/lib/utils/prospecting";
 import { DeleteLeadButton } from "./delete-lead-button";
 import { LeadStatusBadge } from "./lead-status-badge";
 import { SalesPotentialBadge } from "./sales-potential-badge";
 
-export function LeadsTable({ leads }: { leads: Lead[] }) {
-  return (
-    <>
-      <div className="card hidden overflow-hidden md:block">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm">
-            <thead className="border-b bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
-              <tr>
-                {[
-                  "Negócio",
-                  "Segmento",
-                  "Cidade",
-                  "Telefone",
-                  "Avaliação",
-                  "Potencial",
-                  "Status",
-                  "Follow-up",
-                  "Ações",
-                ].map((h) => (
-                  <th scope="col" className="px-4 py-3 font-semibold" key={h}>
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody className="divide-y">
-              {leads.map((lead) => (
-                <tr key={lead.id} className="hover:bg-slate-50/70">
-                  <th
-                    scope="row"
-                    className="whitespace-nowrap px-4 py-4 font-semibold"
-                  >
-                    <Link
-                      className="hover:text-blue-700"
-                      href={`/leads/${lead.id}`}
-                    >
-                      {lead.businessName}
-                    </Link>
-                  </th>
-                  <td className="px-4 py-4 text-slate-600">
-                    {emptyValue(lead.segment)}
-                  </td>
-                  <td className="px-4 py-4 text-slate-600">
-                    {emptyValue(lead.city)}
-                  </td>
-                  <td className="whitespace-nowrap px-4 py-4 text-slate-600">
-                    {emptyValue(lead.phone)}
-                  </td>
-                  <td className="whitespace-nowrap px-4 py-4">
-                    {formatRating(lead.rating)}
-                  </td>
-                  <td className="px-4 py-4">
-                    <SalesPotentialBadge potential={lead.salesPotential} />
-                  </td>
-                  <td className="px-4 py-4">
-                    <LeadStatusBadge status={lead.status} />
-                  </td>
-                  <td className="whitespace-nowrap px-4 py-4">
-                    {formatDate(lead.followUpDate)}
-                  </td>
-                  <td className="px-4 py-4">
-                    <div className="flex items-center gap-3">
-                      <Link
-                        href={`/leads/${lead.id}`}
-                        aria-label={`Ver ${lead.businessName}`}
-                        className="text-slate-500 hover:text-blue-700"
-                      >
-                        <Eye size={17} />
-                      </Link>
-                      <Link
-                        href={`/leads/${lead.id}/edit`}
-                        aria-label={`Editar ${lead.businessName}`}
-                        className="text-slate-500 hover:text-blue-700"
-                      >
-                        <Pencil size={17} />
-                      </Link>
-                      <DeleteLeadButton
-                        compact
-                        id={lead.id}
-                        name={lead.businessName}
-                      />
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-      <div className="grid gap-3 md:hidden">
-        {leads.map((lead) => (
-          <article key={lead.id} className="card p-4">
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <h2 className="font-semibold">{lead.businessName}</h2>
-                <p className="mt-1 text-sm text-slate-500">
-                  {emptyValue(lead.segment)} · {emptyValue(lead.city)}
-                </p>
-              </div>
-              <SalesPotentialBadge potential={lead.salesPotential} />
-            </div>
-            <div className="mt-4 flex items-center justify-between">
-              <LeadStatusBadge status={lead.status} />
-              <div className="flex gap-3">
-                <Link
-                  href={`/leads/${lead.id}`}
-                  className="text-sm font-medium text-blue-700"
-                >
-                  Ver <ExternalLink className="inline" size={14} />
-                </Link>
-                <Link
-                  href={`/leads/${lead.id}/edit`}
-                  className="text-sm font-medium text-slate-600"
-                >
-                  Editar
-                </Link>
-                <DeleteLeadButton
-                  compact
-                  id={lead.id}
-                  name={lead.businessName}
-                />
-              </div>
-            </div>
-          </article>
-        ))}
-      </div>
-    </>
-  );
+type ListedLead = Lead & { analyses: { status: AIAnalysisStatus }[] };
+function AnalysisBadge({status}:{status?:AIAnalysisStatus}){const label=status==="COMPLETED"?"Análise concluída":status==="FAILED"?"Análise com erro":status==="PENDING"?"Analisando":"Sem análise";const color=status==="COMPLETED"?"bg-emerald-100 text-emerald-800":status==="FAILED"?"bg-red-100 text-red-800":status==="PENDING"?"bg-blue-100 text-blue-800":"bg-slate-100 text-slate-600";return <span className={`inline-flex whitespace-nowrap rounded-full px-2 py-1 text-xs font-semibold ${color}`}>{label}</span>}
+function FollowUp({date}:{date:Date|null}){const state=followUpState(date);const style=state==="TODAY"?"font-semibold text-blue-700":state==="OVERDUE"?"font-semibold text-red-700":"";return <span className={style}>{formatDate(date)}{state==="TODAY"?" • hoje":state==="OVERDUE"?" • atrasado":""}</span>}
+
+export function LeadsTable({leads}:{leads:ListedLead[]}){
+ return <>
+  <div className="card hidden overflow-hidden md:block"><div className="overflow-x-auto"><table className="w-full text-left text-sm"><thead className="border-b bg-slate-50 text-xs uppercase tracking-wide text-slate-500"><tr>{["Negócio","Segmento","Cidade","Telefone","Avaliação","Potencial","Status","IA","Follow-up","Ações"].map(h=><th scope="col" className="px-4 py-3 font-semibold" key={h}>{h}</th>)}</tr></thead><tbody className="divide-y">{leads.map(lead=><tr key={lead.id} className="hover:bg-slate-50/70"><th scope="row" className="whitespace-nowrap px-4 py-4 font-semibold"><Link className="hover:text-blue-700" href={`/leads/${lead.id}`}>{lead.businessName}</Link></th><td className="px-4 py-4 text-slate-600">{emptyValue(lead.segment)}</td><td className="px-4 py-4 text-slate-600">{emptyValue(lead.city)}</td><td className="whitespace-nowrap px-4 py-4 text-slate-600">{emptyValue(lead.phone)}</td><td className="whitespace-nowrap px-4 py-4">{formatRating(lead.rating)}</td><td className="px-4 py-4"><SalesPotentialBadge potential={lead.salesPotential}/></td><td className="px-4 py-4"><LeadStatusBadge status={lead.status}/></td><td className="px-4 py-4"><AnalysisBadge status={lead.analyses[0]?.status}/></td><td className="whitespace-nowrap px-4 py-4"><FollowUp date={lead.followUpDate}/></td><td className="px-4 py-4"><div className="flex items-center gap-3"><Link href={`/leads/${lead.id}`} aria-label={`Ver ${lead.businessName}`} className="text-slate-500 hover:text-blue-700"><Eye size={17}/></Link><Link href={`/leads/${lead.id}/edit`} aria-label={`Editar ${lead.businessName}`} className="text-slate-500 hover:text-blue-700"><Pencil size={17}/></Link><DeleteLeadButton compact id={lead.id} name={lead.businessName}/></div></td></tr>)}</tbody></table></div></div>
+  <div className="grid gap-1 md:hidden">{leads.map(lead=><article key={lead.id} className="flex min-h-[72px] items-center gap-3 rounded-lg border border-[#c7c4d8] bg-[#f8f9fa] px-4 py-3"><input type="checkbox" aria-label={`Selecionar ${lead.businessName}`} className="size-4 shrink-0 rounded border-[#c7c4d8] accent-[#4f46e5]"/><Link href={`/leads/${lead.id}`} className="flex min-w-0 flex-1 items-center justify-between gap-3"><div className="min-w-0 flex-1"><div className="flex min-w-0 items-center gap-2"><h2 className="truncate text-xs font-bold tracking-wide text-[#191c1d]">{lead.businessName}</h2><span className={`inline-flex rounded-full px-2 py-0.5 text-[11px] font-semibold ${lead.salesPotential==="HIGH"?"bg-[#fee2e2] text-[#991b1b]":lead.salesPotential==="MEDIUM"?"bg-[#fef3c7] text-[#92400e]":"bg-[#dcfce7] text-[#166534]"}`}>{lead.salesPotential==="HIGH"?"ALTA":lead.salesPotential==="MEDIUM"?"MÉDIA":"BAIXA"}</span></div><div className="mt-2 flex min-w-0 items-center gap-4 text-[13px] text-[#464555]"><span className="flex min-w-0 items-center gap-1.5"><Building2 className="shrink-0" size={13}/><span className="truncate">{emptyValue(lead.segment)}</span></span><span className="flex min-w-0 items-center gap-1.5"><MapPin className="shrink-0" size={13}/><span className="truncate">{emptyValue(lead.city)}{lead.state?`, ${lead.state}`:""}</span></span></div></div><div className="shrink-0 text-right"><p className="text-[11px] font-semibold tracking-[0.05em] text-[#464555]">STATUS</p><p className="mt-1 max-w-24 text-xs font-medium text-[#191c1d]">{statusLabels[lead.status]}</p></div><ChevronRight className="shrink-0 text-[#c7c4d8]" size={19}/></Link></article>)}</div>
+ </>;
 }

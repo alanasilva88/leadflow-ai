@@ -11,14 +11,18 @@
     "db:migrate": "prisma migrate dev",
     "db:seed": "prisma db seed",
     "examples:generate": "node scripts/generate-example-xlsx.mjs",
-    "test": "tsx --test lib/import/import.test.ts"
+    "test": "tsx --test \"lib/**/*.test.ts\""
   },
   "dependencies": {
     "@hookform/resolvers": "^5.4.0",
-    "@prisma/adapter-better-sqlite3": "^7.9.0",
+    "@prisma/adapter-pg": "^7.9.0",
     "@prisma/client": "^7.9.0",
+    "bcryptjs": "^3.0.3",
+    "jose": "^6.2.10",
     "lucide-react": "^1.26.0",
     "next": "16.2.11",
+    "openai": "^6.49.0",
+    "pg": "^8.22.0",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "react-hook-form": "^7.82.0",
@@ -28,6 +32,7 @@
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
+    "@types/pg": "^8.20.0",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",

@@ -8,6 +8,7 @@ import {
   type Lead,
 } from "@prisma/client";
 import Link from "next/link";
+import { BriefcaseBusiness, Building2, CalendarDays, Save, Sparkles } from "lucide-react";
 import { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { createLead, updateLead } from "@/lib/actions/lead-actions";
@@ -86,7 +87,7 @@ export function LeadForm({ lead }: { lead?: Lead }) {
     <div>
       <label
         htmlFor={name}
-        className="mb-1.5 block text-sm font-medium text-slate-700"
+        className="mb-1 block text-xs font-medium tracking-[.02em] text-[#464555]"
       >
         {label}
         {required && <span className="text-red-600"> *</span>}
@@ -96,7 +97,7 @@ export function LeadForm({ lead }: { lead?: Lead }) {
     </div>
   );
   return (
-    <form onSubmit={handleSubmit(submit)} noValidate className="space-y-6">
+    <form onSubmit={handleSubmit(submit)} noValidate className="space-y-8">
       {serverError && (
         <div
           role="alert"
@@ -105,16 +106,17 @@ export function LeadForm({ lead }: { lead?: Lead }) {
           {serverError}
         </div>
       )}
-      <section className="card p-5 sm:p-6">
-        <h2 className="font-semibold">Dados do negócio</h2>
-        <div className="mt-5 grid gap-5 sm:grid-cols-2">
+      <section className="overflow-hidden rounded-xl border border-[#c7c4d8] bg-white shadow-sm">
+        <h2 className="flex items-center gap-2 border-b border-[#c7c4d8] bg-[#f8f9fa] px-5 py-4 text-xl font-medium tracking-[-.02em] sm:px-8"><Building2 size={20} className="text-[#3525cd]"/>Empresa</h2>
+        <div className="grid gap-4 p-5 sm:grid-cols-2 sm:p-8">
           {field(
             "businessName",
-            "Nome do negócio",
+            "Nome",
             <input
               id="businessName"
               className="input"
               autoFocus
+              placeholder="Ex: Acme Corp"
               {...register("businessName")}
             />,
             true,
@@ -171,9 +173,9 @@ export function LeadForm({ lead }: { lead?: Lead }) {
           )}
         </div>
       </section>
-      <section className="card p-5 sm:p-6">
-        <h2 className="font-semibold">Presença digital</h2>
-        <div className="mt-5 grid gap-5 sm:grid-cols-2">
+      <section className="overflow-hidden rounded-xl border border-[#c7c4d8] bg-white shadow-sm">
+        <h2 className="flex items-center gap-2 border-b border-[#c7c4d8] bg-[#f8f9fa] px-5 py-4 text-xl font-medium tracking-[-.02em] sm:px-8"><BriefcaseBusiness size={20} className="text-[#3525cd]"/>Presença digital</h2>
+        <div className="grid gap-4 p-5 sm:grid-cols-2 sm:p-8">
           {field(
             "website",
             "Site",
@@ -218,12 +220,12 @@ export function LeadForm({ lead }: { lead?: Lead }) {
           )}
         </div>
       </section>
-      <section className="card p-5 sm:p-6">
-        <h2 className="font-semibold">Diagnóstico</h2>
-        <div className="mt-5 grid gap-5 sm:grid-cols-2">
+      <section className="overflow-hidden rounded-xl border border-[#c7c4d8] bg-white shadow-sm">
+        <h2 className="flex items-center gap-2 border-b border-[#c7c4d8] bg-[#f8f9fa] px-5 py-4 text-xl font-medium tracking-[-.02em] sm:px-8"><Sparkles size={20} className="text-[#3525cd]"/>Qualificação &amp; Contexto</h2>
+        <div className="grid gap-4 p-5 sm:grid-cols-2 sm:p-8">
           {field(
             "salesPotential",
-            "Potencial de venda",
+            "Prioridade",
             <select
               id="salesPotential"
               className="input"
@@ -268,9 +270,9 @@ export function LeadForm({ lead }: { lead?: Lead }) {
           </div>
         </div>
       </section>
-      <section className="card p-5 sm:p-6">
-        <h2 className="font-semibold">Prospecção</h2>
-        <div className="mt-5 grid gap-5 sm:grid-cols-2">
+      <section className="overflow-hidden rounded-xl border border-[#c7c4d8] bg-white shadow-sm">
+        <h2 className="flex items-center gap-2 border-b border-[#c7c4d8] bg-[#f8f9fa] px-5 py-4 text-xl font-medium tracking-[-.02em] sm:px-8"><CalendarDays size={20} className="text-[#3525cd]"/>Acompanhamento</h2>
+        <div className="grid gap-4 p-5 sm:grid-cols-2 sm:p-8">
           {field(
             "status",
             "Status",
@@ -296,7 +298,7 @@ export function LeadForm({ lead }: { lead?: Lead }) {
           )}
           {field(
             "contactedAt",
-            "Data do contato",
+            "Data do 1º contato",
             <input
               id="contactedAt"
               className="input"
@@ -306,7 +308,7 @@ export function LeadForm({ lead }: { lead?: Lead }) {
           )}
           {field(
             "followUpDate",
-            "Data de follow-up",
+            "Data do próximo follow-up",
             <input
               id="followUpDate"
               className="input"
@@ -317,7 +319,7 @@ export function LeadForm({ lead }: { lead?: Lead }) {
           <div className="sm:col-span-2">
             {field(
               "notes",
-              "Observações",
+              "Notas adicionais",
               <textarea
                 id="notes"
                 className="input min-h-28"
@@ -327,7 +329,8 @@ export function LeadForm({ lead }: { lead?: Lead }) {
           </div>
         </div>
       </section>
-      <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+      <div className="fixed inset-x-0 bottom-0 z-30 border-t border-[#c7c4d8] bg-white px-6 py-4 shadow-[0_-4px_6px_-1px_rgba(0,0,0,.05)]">
+        <div className="mx-auto flex max-w-3xl justify-end gap-4">
         <Link
           href={lead ? `/leads/${lead.id}` : "/leads"}
           className="btn-secondary"
@@ -335,8 +338,9 @@ export function LeadForm({ lead }: { lead?: Lead }) {
           Cancelar
         </Link>
         <SubmitButton pending={pending}>
-          {lead ? "Salvar alterações" : "Cadastrar lead"}
+          <Save size={14}/>{lead ? "Salvar alterações" : "Cadastrar lead"}
         </SubmitButton>
+        </div>
       </div>
     </form>
   );

@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
 }
 
 enum SalesPotential {
@@ -35,9 +35,44 @@ enum LeadResponse {
   DEAL_CLOSED
 }
 
+enum AIAnalysisStatus {
+  PENDING
+  COMPLETED
+  FAILED
+}
+
+enum AIConfidence {
+  HIGH
+  MEDIUM
+  LOW
+}
+
+enum RecommendedService {
+  LANDING_PAGE
+  INSTITUTIONAL_SITE
+  CHATBOT
+  SCHEDULING_SYSTEM
+  CUSTOM_SYSTEM
+  DIGITAL_PRESENCE_REVIEW
+}
+
+enum LeadSource {
+  MANUAL
+  SPREADSHEET
+  GOOGLE_PLACES
+}
+
 model Lead {
   id                  String         @id @default(cuid())
   businessName        String
+  source              LeadSource     @default(MANUAL)
+  externalPlaceId     String?        @unique
+  niche               String?
+  state               String?
+  formattedAddress    String?
+  googleMapsUrl       String?
+  businessStatus      String?
+  opportunityScore    Int            @default(0)
   phone               String?
   instagram           String?
   website             String?
@@ -58,9 +93,39 @@ model Lead {
   notes               String?
   createdAt           DateTime       @default(now())
   updatedAt           DateTime       @updatedAt
+  analyses            LeadAnalysis[]
 
   @@index([businessName])
   @@index([status])
   @@index([salesPotential])
   @@index([followUpDate])
+  @@index([source])
+  @@index([opportunityScore])
+}
+
+model LeadAnalysis {
+  id                 String              @id @default(cuid())
+  leadId             String
+  lead               Lead                @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  status             AIAnalysisStatus    @default(PENDING)
+  salesPotential     SalesPotential?
+  websiteScore       Int?
+  mainOpportunity    String?
+  evidence           Json?
+  suggestedSolution  String?
+  recommendedService RecommendedService?
+  approachMessage    String?
+  followUpMessage    String?
+  confidence         AIConfidence?
+  model              String?
+  sourceWebsite      String?
+  websiteCheckedAt   DateTime?
+  analyzedAt         DateTime?
+  errorMessage       String?
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+
+  @@index([leadId])
+  @@index([status])
+  @@index([analyzedAt])
 }

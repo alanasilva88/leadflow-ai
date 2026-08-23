@@ -6,7 +6,7 @@ export function MetricCard({
   icon: Icon,
 }: {
   label: string;
-  value: number;
+  value: number | string;
   icon: LucideIcon;
 }) {
   return (

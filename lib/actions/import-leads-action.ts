@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { duplicateKeys } from "@/lib/import/detect-file-duplicates";
 import { finalImportRequestSchema } from "@/lib/validations/lead-import-schema";
 import type { ImportResult, NormalizedImportLead } from "@/types/lead-import";
+import { requireSession } from "@/lib/auth/session";
 
 async function databaseDuplicate(lead: NormalizedImportLead) {
   const candidates = await prisma.lead.findMany({
@@ -33,6 +34,7 @@ async function databaseDuplicate(lead: NormalizedImportLead) {
 export async function analyzeDatabaseDuplicates(
   input: unknown,
 ): Promise<number[]> {
+  await requireSession();
   const parsed = finalImportRequestSchema.safeParse(input);
   if (!parsed.success) return [];
   const duplicateRows: number[] = [];
@@ -41,6 +43,7 @@ export async function analyzeDatabaseDuplicates(
   return duplicateRows;
 }
 export async function importLeads(input: unknown): Promise<ImportResult> {
+  await requireSession();
   const parsed = finalImportRequestSchema.safeParse(input);
   if (!parsed.success)
     return {

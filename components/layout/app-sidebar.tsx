@@ -1,14 +1,16 @@
 "use client";
 
-import { BarChart3, FileUp, Plus, Users } from "lucide-react";
+import { BarChart3, FileUp, LogOut, Plus, Users } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { logoutAction } from "@/lib/actions/auth-actions";
 
 export const navigation = [
   { href: "/dashboard", label: "Visão geral", icon: BarChart3 },
   { href: "/leads", label: "Leads", icon: Users },
   { href: "/leads/new", label: "Adicionar lead", icon: Plus },
   { href: "/leads/import", label: "Importar leads", icon: FileUp },
+  { href: "/prospecting", label: "Prospectar hoje", icon: Users },
 ];
 
 export function NavigationLinks({ onNavigate }: { onNavigate?: () => void }) {
@@ -47,9 +49,7 @@ export function AppSidebar() {
         </div>
       </div>
       <NavigationLinks />
-      <p className="mt-auto px-2 text-xs leading-5 text-slate-500">
-        Organize oportunidades e mantenha seus próximos contatos em dia.
-      </p>
+      <form action={logoutAction} className="mt-auto"><button className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white"><LogOut size={19}/> Sair</button></form>
     </aside>
   );
 }

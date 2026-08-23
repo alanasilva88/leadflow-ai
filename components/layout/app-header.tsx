@@ -21,9 +21,11 @@ function pageInfo(pathname: string) {
 }
 
 export function AppHeader() {
-  const [title, description] = pageInfo(usePathname());
+  const pathname = usePathname();
+  const [title, description] = pageInfo(pathname);
+  const isLeadDetail = /^\/leads\/[^/]+$/.test(pathname);
   return (
-    <header className="sticky top-0 z-20 border-b bg-white/95 backdrop-blur">
+    <header className={`sticky top-0 z-20 border-b bg-white/95 backdrop-blur ${pathname === "/dashboard" || pathname === "/leads" || pathname === "/leads/import" || pathname === "/leads/new" || isLeadDetail ? "hidden lg:block" : ""}`}>
       <div className="flex min-h-20 items-center gap-3 px-4 sm:px-6 lg:px-8">
         <MobileNavigation />
         <div>

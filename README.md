@@ -6,7 +6,7 @@ Sistema pessoal para organizar a prospecção de clientes de serviços digitais.
 
 - Next.js 16 com App Router, React 19 e TypeScript
 - Tailwind CSS 4
-- Prisma 7 com SQLite
+- Prisma 7 com PostgreSQL/Neon
 - Zod e React Hook Form
 - Lucide React
 
@@ -45,7 +45,8 @@ npm install
 Copie `.env.example` para `.env` e mantenha:
 
 ```env
-DATABASE_URL="file:./dev.db"
+DATABASE_URL="postgresql://usuario:senha@host-pooler.neon.tech/neondb?sslmode=require"
+DATABASE_URL_UNPOOLED="postgresql://usuario:senha@host.neon.tech/neondb?sslmode=require"
 ```
 
 Prepare e popule o banco:
@@ -107,3 +108,137 @@ npm run examples:generate
 ### Limitações atuais
 
 Esta versão não integra diretamente com Google Sheets, não usa IA, não analisa sites, não atualiza/mescla leads existentes e não mantém os arquivos ou mapeamentos. Autenticação, filas, importações massivas, WhatsApp, Instagram e análise automática ficam para outras sprints.
+
+# LeadFlow AI
+
+Aplicação Next.js para cadastro, importação e análise assistida de leads.
+
+## Sprint 3 — análise inteligente
+
+A página de detalhes de cada lead agora permite iniciar manualmente uma análise com a OpenAI. A aplicação tenta ler somente a página inicial pública do site, envia um resumo limitado dos sinais encontrados, recebe uma saída estruturada, valida novamente com Zod e mostra uma prévia editável. Nada é aplicado ao cadastro do lead antes da confirmação.
+
+### Configuração
+
+Copie `.env.example` para `.env` e configure:
+
+```env
+OPENAI_API_KEY=sua_chave
+OPENAI_MODEL=um_modelo_compativel_com_structured_outputs
+```
+
+Nunca use `NEXT_PUBLIC_` na chave, envie o `.env` ao GitHub ou coloque uma chave real em código/testes. `.env` e `.env.local` são ignorados pelo Git. A API da OpenAI pode ter cobrança por uso.
+
+Instale, migre e inicie:
+
+```bash
+npm install
+npx prisma migrate dev
+npm run dev
+```
+
+Abra `http://localhost:3000/leads`, escolha um lead e clique em **Analisar com IA**. O resultado pode ser editado; os checkboxes de aplicação ao lead começam desmarcados. Uma análise concluída é reutilizada por padrão. **Analisar novamente** exige confirmação, faz nova chamada e preserva o histórico.
+
+### Coleta do site e segurança
+
+A coleta usa HTTP server-side, apenas na home, com timeout curto, resposta HTML limitada a 500 KB e no máximo três redirecionamentos. São extraídos título, descrição, headings, CTAs e sinais simples de contato, formulário, agendamento e chatbot; HTML bruto não é enviado nem salvo.
+
+URLs são tratadas como não confiáveis. Apenas HTTP/HTTPS e portas 80/443 são aceitos; credenciais, localhost, IPs privados/reservados, link-local e metadata são bloqueados. O DNS é resolvido e validado novamente em cada redirecionamento. TLS não é desativado. Sites indisponíveis, grandes, não HTML ou que bloqueiem leitura geram um aviso, e a análise continua sem o site.
+
+### Controle de consumo e revisão
+
+- Uma chamada ocorre somente por clique; não há análise automática ou em lote.
+- Resultados salvos são reutilizados e reanálises pedem confirmação.
+- Apenas dados necessários e textos limitados são enviados.
+- Copiar, editar e salvar não chama a OpenAI.
+- O modelo e a data são registrados; erros são seguros e não incluem chave, prompt, HTML ou resposta integral.
+
+A análise é uma sugestão e deve ser revisada. A aplicação não garante precisão comercial nem promete resultados.
+
+### Verificações
+
+```bash
+npx prisma format
+npx prisma validate
+npx prisma generate
+npm run typecheck
+npm run lint
+npm run test
+npm run build
+```
+
+Para testar manualmente, use `/leads`, `/leads/[id]` e `/dashboard`, incluindo leads sem site, com site válido/indisponível e URL localhost. Teste também chave ausente, modelo inválido, reutilização, reanálise e salvamento com/sem aplicação dos campos.
+
+### Limites e Sprint 4
+
+Não há crawling de múltiplas páginas, navegador automatizado, análise de redes sociais, processamento em massa ou background, nem envio automático de WhatsApp/Instagram.
+
+## Sprint 4 — Prospecção e acompanhamento
+
+Na página do lead, a seção **Prospecção** reutiliza a mensagem da análise mais recente, a mensagem personalizada do lead ou um modelo local determinístico. É possível editar localmente, copiar, abrir o WhatsApp com o texto preenchido ou copiar e abrir o perfil do Instagram. O envio é sempre manual e abrir um canal não registra contato automaticamente.
+
+Depois do envio manual, use **Registrar contato** para atualizar a data, o status e definir um follow-up. A resposta recebida pode ser registrada depois; respostas positivas levam a `RESPONDED`, negativas a `LOST`, reuniões a `MEETING`, propostas a `PROPOSAL` e negócios fechados a `CLOSED`. “Entrar em contato depois” exige uma nova data.
+
+A listagem permite filtrar follow-ups de hoje, atrasados, próximos ou ausentes. O dashboard mostra follow-ups de hoje/atrasados, leads sem contato, contatados, respondidos e taxa de resposta. A taxa é calculada como respostas diferentes de “não respondeu” divididas pelos leads contatados, com proteção contra divisão por zero.
+
+Nenhuma operação desta sprint chama a OpenAI. Não existe envio em massa, WhatsApp Business API, Instagram API, confirmação de entrega/leitura ou automação de mensagens.
+
+## Login do administrador
+
+O sistema continua pessoal e usa um único administrador configurado no servidor. Não existe cadastro público, recuperação de senha, modelo `User` ou isolamento de leads por usuário.
+
+```env
+ADMIN_EMAIL=seu-email@example.com
+ADMIN_PASSWORD_HASH=hash_bcrypt
+AUTH_SECRET=segredo_aleatorio_com_32_ou_mais_caracteres
+```
+
+Gere os valores sem versionar a senha:
+
+```bash
+node -e "require('bcryptjs').hash(process.argv[1], 12).then(console.log)" "SUA_SENHA_FORTE"
+node -e "console.log(require('crypto').randomBytes(32).toString('base64url'))"
+```
+
+A sessão dura 12 horas e usa cookie `httpOnly`, `sameSite=lax` e `secure` em produção. A tela pública é `/login`; as demais rotas exigem sessão válida.
+
+## Busca automática de empresas adiada
+
+A integração com Google Places foi pausada neste MVP para evitar a dependência de um novo serviço faturado. A aplicação não realiza Text Search, Place Details nem enriquecimento automático e não exige `GOOGLE_PLACES_API_KEY` para iniciar, testar ou gerar o build.
+
+Use `/leads/new` para cadastro manual ou `/leads/import` para arquivos CSV/XLSX. O código de acesso à Google Places API não faz parte desta versão. Os campos genéricos de origem, endereço, pontuação e deduplicação foram preservados, assim como a migration existente, para não comprometer os dados e permitir uma retomada futura planejada.
+
+### Pontuação preservada
+
+O cálculo genérico abaixo permanece no projeto, mas não executa buscas nem enriquecimento automático nesta versão:
+
+- sem site: +3;
+- telefone: +1;
+- mais de 30 avaliações: +1;
+- mais de 100 avaliações: +1 adicional;
+- nota a partir de 4: +1;
+- operacional: +1.
+
+Pontuações 0–3 são baixas, 4–6 médias e 7+ altas. Fechados permanentemente não são importados. Se a OpenAI falhar, o lead permanece salvo e a tentativa pode ser refeita na página do lead.
+
+## Verificações
+
+```bash
+npx prisma migrate dev
+npx prisma generate
+npm run typecheck
+npm run lint
+npm run test
+npm run build
+```
+
+Fluxo do MVP:
+
+```text
+Importar
+→ analisar
+→ revisar mensagem
+→ abrir canal
+→ enviar manualmente
+→ registrar contato
+→ acompanhar follow-up
+```

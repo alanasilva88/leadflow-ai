@@ -139,64 +139,44 @@ export function ImportWizard() {
       });
       setStep(7);
     });
-  const steps =
-    file?.name.toLowerCase().endsWith(".csv") || sheets.length <= 1
-      ? [1, 3, 4, 5, 6, 7]
-      : [1, 2, 3, 4, 5, 6, 7];
+  const phase = step === 1 ? 1 : step === 7 ? 4 : step === 6 ? 3 : 2;
+  const phases = ["Upload", "Validação", "Preview", "Concluído"];
   return (
     <div className="space-y-5">
       <ol
-        className="flex gap-2 overflow-x-auto pb-2"
+        className="relative flex items-start justify-between pb-3"
         aria-label="Etapas da importação"
       >
-        {steps.map((n) => (
-          <li
-            key={n}
-            className={`whitespace-nowrap rounded-full px-3 py-1.5 text-xs font-semibold ${step === n ? "bg-slate-900 text-white" : step > n ? "bg-emerald-100 text-emerald-800" : "bg-slate-100 text-slate-500"}`}
-          >
-            {n}.{" "}
-            {
-              [
-                "",
-                "Arquivo",
-                "Aba",
-                "Prévia",
-                "Mapeamento",
-                "Validação",
-                "Confirmação",
-                "Resultado",
-              ][n]
-            }
-          </li>
-        ))}
+        <span className="absolute left-0 right-0 top-3 h-0.5 bg-[#c7c4d8]"/><span className="absolute left-0 top-3 h-0.5 bg-[#4f46e5] transition-[width]" style={{width:`${((phase-1)/3)*100}%`}}/>
+        {phases.map((label,index)=>{const number=index+1;const done=number<phase,active=number===phase;return <li key={label} className="relative flex flex-col items-center gap-2"><span className={`grid size-6 place-items-center rounded-full text-xs font-bold ring-4 ring-[#f8f9fa] ${done?"bg-[#4f46e5] text-white":active?"border-2 border-[#3525cd] bg-[#f8f9fa] text-[#3525cd]":"border border-[#c7c4d8] bg-[#edeeef] text-[#464555]"}`}>{number}</span><span className={`text-[11px] font-semibold tracking-wide ${number<=phase?"text-[#3525cd]":"text-[#464555]"}`}>{label}</span></li>})}
       </ol>
       {error && (
         <div
           role="alert"
-          className="flex gap-2 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-800"
+        className="flex gap-3 rounded-lg border border-red-300 bg-[#ffdad6] p-4 text-sm font-medium text-[#93000a] shadow-sm"
         >
           <AlertCircle size={18} />
           {error}
         </div>
       )}
       {step === 1 && (
-        <section className="card p-6">
+        <section className="overflow-hidden rounded-xl border border-[#c7c4d8] bg-gradient-to-b from-white to-[#f3f4f5] p-8 shadow-sm">
           <div
             onDragOver={(e) => e.preventDefault()}
             onDrop={(e) => {
               e.preventDefault();
               void selectFile(e.dataTransfer.files[0]);
             }}
-            className="grid min-h-64 place-items-center rounded-xl border-2 border-dashed border-slate-300 p-8 text-center"
+            className="grid min-h-[242px] place-items-center p-2 text-center"
           >
             <div>
-              <Upload className="mx-auto mb-3 text-slate-400" />
-              <h2 className="font-semibold">Arraste sua planilha aqui</h2>
-              <p className="mt-1 text-sm text-slate-500">
-                XLSX ou CSV, até 5 MB e 500 registros.
+              <span className="mx-auto mb-5 grid size-16 place-items-center rounded-full bg-[#e2dfff] text-[#3525cd]"><Upload size={29}/></span>
+              <h2 className="text-2xl font-medium tracking-[-0.02em]">Importe seus leads</h2>
+              <p className="mx-auto mt-3 max-w-[280px] text-sm leading-5 text-[#464555]">
+                Arraste seu arquivo ou clique para selecionar. Formatos suportados: CSV, XLSX (máx. 5 MB).
               </p>
               <button
-                className="btn-primary mt-5"
+                className="mt-6 inline-flex h-11 items-center justify-center rounded-lg bg-[#4f46e5] px-6 text-xs font-medium tracking-wide text-white shadow-sm"
                 onClick={() => inputRef.current?.click()}
               >
                 Selecionar arquivo

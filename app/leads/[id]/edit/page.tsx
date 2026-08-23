@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { LeadForm } from "@/components/leads/lead-form";
 import { prisma } from "@/lib/prisma";
+import { verifySession } from "@/lib/auth/session";
 
 export const dynamic = "force-dynamic";
 export default async function EditLeadPage({
@@ -8,6 +9,7 @@ export default async function EditLeadPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
+  await verifySession();
   const { id } = await params;
   const lead = await prisma.lead.findUnique({ where: { id } });
   if (!lead) notFound();
